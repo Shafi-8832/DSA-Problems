@@ -1,0 +1,1 @@
+{"name":"Local: LCS","url":"c:\\Users\\User\\DSA-Problems\\DP\\LCS.cpp","tests":[{"id":1774405130259,"input":"BCDAACD\nACDBAB","output":"3\r\n"},{"id":1774405151605,"input":"AGGTAB\nGXTXAYB","output":"4\r\n"}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\User\\DSA-Problems\\DP\\LCS.cpp","group":"local","local":true}
