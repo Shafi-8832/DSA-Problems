@@ -1,0 +1,44 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+#define all(x) (x).begin(), (x).end()
+using ll = long long;
+using ull = unsigned long long;
+using pii = pair<int, int>;
+using pll = pair<ll, ll>;
+#define f(t, i, x, y) for (t (i)=(x); (i)<(y); (i)++)
+#define fe(t, i, x, y) for (t (i)=(x); (i)<=(y); (i)++)
+
+#define pb push_back
+#define ppb pop_back
+#define pf push_front
+#define ppf pop_front
+#define intmin INT64_MIN
+#define int long long
+
+
+int32_t main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr); cout.tie(nullptr);
+
+    string a, b; cin >> a >> b;
+
+    int n = a.size(), m = b.size();
+
+    vector<vector<int>> dp(2, vector<int>(m + 1, 0));
+
+    for (int i=1; i<=n; i++) {
+        for (int j=1; j<=m; j++) {
+            if (a[i  -1] == b[j  -1]) {
+                dp[i%2][j] = 1 + dp[(i-1) % 2][j-1];
+            }
+            else {
+                dp[i%2][j] = max(dp[(i-1)%2][j], dp[i%2][j-1]);
+            }
+        }
+    }
+
+    cout << dp[n%2][m] << '\n';
+    
+    return 0;
+}
