@@ -23,6 +23,10 @@ typedef struct {
     int value;
 } job;
 
+bool compareFinish(const job &a, const job &b) {
+    return a.finish_time < b.finish_time;
+}
+
 int32_t main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);
@@ -34,29 +38,45 @@ int32_t main() {
         cin >> j.start_time >> j.finish_time >> j.value;
     }
 
-    sort(all(jobs));
+    sort(all(jobs), compareFinish);
 
     vector<int> dp(N);
+    dp[0] = jobs[0].value; // BASE CASE add korte vule gesi
+
+
+    vector<int> finish_times(N);
+    for (int i=0; i<N; i++) finish_times[i] = jobs[i].finish_time;
+
+
     for (int i=1; i<N; i++) {
-        auto it = upper_bound(jobs.begin(), jobs.begin() + i, jobs[i].start_time);
-        int valid_index = it - jobs.begin() - 1;
+        auto it = upper_bound(finish_times.begin(), finish_times.begin() + i, jobs[i].start_time);
+        int valid_index = it - finish_times.begin() - 1;
+
+        int past_profit = (valid_index < 0) ? 0 : dp[valid_index];
         
-        dp[i] = max(dp[i-1], dp[valid_index] + jobs[i].value);
+        dp[i] = max(dp[i-1], past_profit + jobs[i].value);
     }
 
     cout << "Max Value : " << dp[N-1];
 
+
+
     // backtracking
 
-    list<int> locations;
+    list<int> job_indices;
 
-    for (int i=N-1; i>=1; ) {
-        auto it = upper_bound(jobs.begin(), jobs.begin() + i, jobs[i].start_time);
-        int valid_index = it - jobs.begin() - 1;
+    for (int i=N-1; i>=0; ) {
+        if (i == 0) {
+            job_indices.push_front(i);
+            break;
+        }
+
+        auto it = upper_bound(finish_times.begin(), finish_times.begin() + i, jobs[i].start_time);
+        int valid_index = it - finish_times.begin() - 1;
         
         if (dp[i] == dp[i-1]) i--;
         else {
-            locations.push_front(i);
+            job_indices.push_front(i);
             i = valid_index;
         }
     }
