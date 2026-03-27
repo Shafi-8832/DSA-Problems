@@ -37,8 +37,11 @@ int32_t main() {
         auto it = upper_bound(m.begin(), m.begin() + i, safe_distance_from_dhaka);
         
         int valid_index = it - m.begin() - 1;
+
+        // big bug fix : valid index can be -1 if it == m.begin()
+        int past_profit = (valid_index < 0) ? 0 : dp[valid_index];
         
-        dp[i] = max(dp[i-1], dp[valid_index] + p[i]);
+        dp[i] = max(dp[i-1], past_profit + p[i]);
     }
     
     cout << "Max Profit : " << dp[N-1] << '\n';
@@ -46,17 +49,23 @@ int32_t main() {
     list<int> locations;
     // backtracking
     
-    for (int i=N-1; i>=1; ) {
+    for (int i=N-1; i>=0; ) {
+        if (i == 0) {
+            locations.push_front(i);
+            break;
+        }
+
         int safe_distance = m[i] - K;
         auto it = upper_bound(m.begin(), m.begin() + i, safe_distance);
         int valid_index = it - m.begin() - 1;
-        
-        if (dp[i-1] < dp[valid_index] + p[i]) {
-            // built the restaurant exactly here (at index i)
+
+
+        if (dp[i] == dp[i-1]) i--; // interrogate i-1, as we left i;
+        else {
             locations.push_front(i);
-            i = valid_index; // back off
+            i = valid_index;
         }
-        else i--; // interrogate i-1
+
     }
     
     cout << "Locations : ";
