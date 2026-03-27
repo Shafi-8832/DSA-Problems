@@ -10,7 +10,7 @@ These are the 2 extreme returns, so `-1` could arrive.
 ## 🏢 The Physics of `dp[0]`
 `dp[0] = p[0]`
 
-If I arrive at location 0 walking backwards, then why would I miss the chance to built the restaurant and gain profit? `dp[0]` gets counted!
+If I arrive at location 0 walking backwards, then why would I miss the chance to build the restaurant and gain profit? `dp[0]` gets counted!
 
 Cause there is no restriction "Behind" location 0 ! 
 not `dp[-1]` neither `dp[valid_index]`
