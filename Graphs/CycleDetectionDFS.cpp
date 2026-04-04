@@ -68,6 +68,8 @@ int32_t main() {
        when a problem specifically asks about reachability from a single specific starting point.
     */ 
 
+    // Back Edges <= Cycles, so back edges means at least 1 cycle
+
     cout << "has cycle : " << hasCycle << '\n';
 
 
