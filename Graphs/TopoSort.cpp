@@ -47,9 +47,23 @@ int32_t main() {
     cin.tie(nullptr); cout.tie(nullptr);
 
     int n, m; cin >> n >> m;
+
+    adj_list.resize(n + 1);
+    visited.resize(n + 1, false);
+    pathVisited.resize(n + 1, false);
+
     for (int i=0; i < m; i++) {
         int a, b; cin >> a >> b;
         adj_list[a].push_back(b);
+    }
+
+    for (int i=0; i<n; i++) {
+        if (!visited[i]) dfs(i);
+    }
+
+    if (hasCycle) {
+        cout << "Has Cycle, not A DAG. no valid topological order."
+        return 0;
     }
 
     while (!topoSort.empty()) {
