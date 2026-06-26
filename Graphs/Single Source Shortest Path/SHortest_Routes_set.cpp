@@ -20,14 +20,14 @@ int32_t main() {
         adj_list[u].push_back({w, v});
     }
 
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    set<pair<int, int>> pq;
     d[1] = 0;
-    pq.push({0, 1});
+    pq.insert({0, 1});
 
     while (!pq.empty()) {
-        int u = pq.top().second; // TC O(LogV)
-        int old = pq.top().first;
-        pq.pop(); // TC O(LogV)
+        int u = pq.begin()->second;
+        int old = pq.begin()->first;
+        pq.erase(pq.begin());
 
         // LAZY deletion
         if (old > d[u]) continue; // {20, 2}, {10, 2}, ignore {20, 2} pop it out
@@ -36,7 +36,7 @@ int32_t main() {
             // this for loop is run SUM(adj_list|u_i|) times which is (directed graphs) E
             if (d[u] != INF && d[v] > d[u] + w) { // E checks EXACTLY, not less not more, once for EVERY EDGE
                 d[v] = d[u] + w;
-                pq.push({d[v], v}); // worst case, pushed all E times = ElogV
+                pq.insert({d[v], v});
             }
         }
     }
@@ -44,7 +44,6 @@ int32_t main() {
     for (int i=1; i<=n; i++) cout << d[i] << " ";
 
     // LAZY deletion is ABSOLUTELY IMPORTANT
-
     /*
     When you find a better path to node V, you push {new_distance, V} into the Priority Queue. 
     But the old, worse distance is still sitting in the queue! 
