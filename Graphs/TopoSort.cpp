@@ -19,24 +19,27 @@ using pll = pair<ll, ll>;
 
 vector<vector<int>> adj_list;
 vector<bool> visited;
-vector<bool> pasVisited;
-stack<int> topoSort;
+vector<bool> pasVisited; // This array basically simulates the active nodes on a DFS traversal.
+// we know DFS internally maintains a Stack. if a node is in the stack, then that is an ACTIVE node.
+
+stack<int> topoSort; // This is completely a different stack, DON'T mix it with DFS's internal stack.
+// 
 
 
 bool hasCycle = false;
 
 void dfs(int source) {
     visited[source] = true;
-    pasVisited[source] = true;
+    pasVisited[source] = true; // ACTIVE **
 
     for (auto child : adj_list[source]) {
         if (!visited[child]) dfs(child);
-
         else if (pasVisited[child]) hasCycle = true;
     }
 
-    pasVisited[source] = false;
-    topoSort.push(source);
+    pasVisited[source] = false; // popping out of the stack, so becoming INACTIVE node **
+    topoSort.push(source); // the Deadends are to be Pushed in the stack
+    // the dead ends have outdegree = 0.
 }
 
 int32_t main() {
@@ -53,6 +56,14 @@ int32_t main() {
         cout << topoSort.top() << " ";
         topoSort.pop();
     }
+
+    // CRUX : Because a node is only pushed to the stack after all its children are pushed, 
+    // it guarantees that when we pop from the stack later, the parent will always come before the child.
+
+    // The parent will ALWAYS come before the child.
+    // that means in our TopoSort Stack, we have parents stacking on top of children. the directed edges are pointing downwards in the stack
+
+    // so when we pop from top, we are always choosing parents_courses to finish then the children_courses
     
     
     return 0;
