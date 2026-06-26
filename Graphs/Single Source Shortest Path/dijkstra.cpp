@@ -27,9 +27,9 @@ int main() {
         int u = pq.front().second; // TC O(LogV)
         pq.pop(); // TC O(LogV)
 
-        for (auto {w, v} : adj_list[u]) { // mathematically provable, EVERY edge is processed exactly once, that's the genius of dijkstra! we never do extra work, we do the least work to get best result
+        for (auto& {w, v} : adj_list[u]) { // mathematically provable, EVERY edge is processed exactly once, that's the genius of dijkstra! we never do extra work, we do the least work to get best result
             // this for loop is run SUM(adj_list|u_i|) times which is (directed graphs) E
-            if (d[v] > d[u] + w) { // E checks EXACTLY, not less not more, once for EVERY EDGE
+            if (d[u] != INF && d[v] > d[u] + w) { // E checks EXACTLY, not less not more, once for EVERY EDGE
                 d[v] = d[u] + w;
                 pq.push({d[v], v}); // worst case, pushed all E times = ElogV
             }
