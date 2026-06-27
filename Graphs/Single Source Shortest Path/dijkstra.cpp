@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#define INF __INT_MAX__
+#define INF 1e18
 
 int main() {
     int n, e;
@@ -19,13 +19,15 @@ int main() {
 
     int source; cin >> source;
 
-    priority_queue<pair<int, int>> pq;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>()> pq;
     d[source] = 0;
     pq.push({d[source], source});
 
     while (!pq.empty()) {
-        int u = pq.front().second; // TC O(LogV)
+        auto [dist, u] = pq.front().second; // TC O(LogV)
         pq.pop(); // TC O(LogV)
+
+        if (dist > d[u]) continue;
 
         for (auto& {w, v} : adj_list[u]) { // mathematically provable, EVERY edge is processed exactly once, that's the genius of dijkstra! we never do extra work, we do the least work to get best result
             // this for loop is run SUM(adj_list|u_i|) times which is (directed graphs) E
