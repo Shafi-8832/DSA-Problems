@@ -46,8 +46,6 @@ class DSU {
 
 
 int main() {
-
-
     DSU dsu(n);
     return 0;
 }
