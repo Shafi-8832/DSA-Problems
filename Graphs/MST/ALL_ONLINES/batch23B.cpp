@@ -6,6 +6,8 @@ using ll = long long;
 using ull = unsigned long long;
 using pii = pair<int, int>;
 using pll = pair<ll, ll>;
+using tiii = tuple<int, int, int>
+
 #define f(t, i, x, y) for (t (i)=(x); (i)<(y); (i)++)
 #define fe(t, i, x, y) for (t (i)=(x); (i)<=(y); (i)++)
 
@@ -22,23 +24,14 @@ class DSU {
     vector<int> group_size;
     int connected_components;
     int max_size = 1;
-    vector<int> safe_count;
 
 
-    DSU(int n, vector<bool>& risky) {
+    DSU(int n) {
         parent.resize(n + 1);
         group_size.resize(n + 1, 1);
         connected_components = n; // each vertex is a stand-alone component itself.
 
-
-
-        safe_count.resize(n + 1, 0);
-
-        for (int i=0; i<=n; i++) {
-            parent[i] = i; // each vertex is a parent to itself.
-
-            if (i < n && !risky[i]) safe_count[i] = 1;
-        }
+        for (int i=0; i<=n; i++) parent[i] = i; // each vertex is a parent to itself.
         // iota(parent.begin(), parent.end(), 0); same as parent[i] = i
     }
 
@@ -57,17 +50,11 @@ class DSU {
             parent[parent_j] = parent_i;
             group_size[parent_i] += group_size[parent_j];
             max_size = max(max_size, group_size[parent_i]);
-
-
-            safe_count[parent_i] += safe_count[parent_j];
         }
         else {
             parent[parent_i] = parent_j;
             group_size[parent_j] += group_size[parent_i];
             max_size = max(max_size, group_size[parent_j]);
-
-
-            safe_count[parent_j] += safe_count[parent_i];
         }
 
         // successfully merged two groups == edge created between two forests so,,,
@@ -87,86 +74,57 @@ class DSU {
 typedef struct edge {
     int u, v;
 
-    int original_weight;
-    int risky_points; // 0 1 2
-    int effective_weight;
-
+    int w;
 
     bool operator<(const edge& other) {
-        bool this_safe = (risky_points == 0);
-        bool other_safe = (other.risky_points == 0);
-
-        if (this_safe != other_safe) {
-            return this_safe > other_safe;
-        }
-
-        return effective_weight < other.effective_weight;
+        return w < other.w;
     }
 } edge;
-
 
 
 int32_t main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);    
     
-    int n, m, p, k;
-    cin >> n >> m >> p;
-
-    cin >> k;
-
-    vector<bool> risky(n, false);
-    for (int i=0; i<k; i++) {
-        int x;
-        cin >> x;
-        risky[x] = true;
-    }
+    int n, m; cin >> n >> m;
 
     vector<edge> edges(m);
-    for (auto& e : edges) {
-        cin >> e.u >> e.v >> e.original_weight;
-        e.risky_points = (risky[e.u]) + (risky[e.v]);
-
-        e.effective_weight = e.original_weight + P * e.risky_points; // 
+    for (int i=0; i<m; i++) {
+        int a, b, c; cin >> a >> b >> c;
+        edges[i].u = a;
+        edges[i].v = b;
+        edges[i].w = c;
     }
 
     sort(all(edges));
 
-    int cost = 0;
-    vector<pair<int, int>> final_edges;
-
-
-    DSU dsu(n, risky);
-
-    bool possible = false;
+    DSU dsu(n);
+    int mst = 1;
+    int edges_taken = 0;
+    vector<pii> final_edges;
 
     for (auto& e : edges) {
-        int u = e.u, v = e.v, w = e.effective_weight;
+        int a = e.u, b = e.v;
+        double w = e.w;
 
-        if (dsu.unite(u, v)) {
-            final_edges.pb({u, v});
-            cost += w;
+        if (dsu.unite(a, b)) {
+            mst *= w; // log is a strictly increasing function
+            edges_taken++;
+            final_edges.pb({a, b});
 
-            if (dsu.safe_count[dsu.find(u)] == n-k) {
-                possible = true;
-                break;
-            }
+            if (edges_taken == n - 1) break;
         }
     }
 
-    if (!possible) {
-        cout << -1 << '\n';
+    if (final_edges.size() != n - 1) {
+        cout << -1;
         return 0;
-    }
+    } 
 
-    cout << final_edges.size() << '\n';
-
+    cout << mst << '\n';
     for (auto& e : final_edges) {
-        cout << e.first << " " << e.second;
-        cout << (risky[e.first] || risky[e.second]) ? "RISKY\n" : "\n";
+        cout << e.first << " " << e.second << '\n';
     }
-    cout << cost;
- 
 
     return 0;
 }

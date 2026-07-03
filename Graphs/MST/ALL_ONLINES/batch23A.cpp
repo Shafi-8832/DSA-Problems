@@ -5,7 +5,6 @@ using namespace std;
 using ll = long long;
 using ull = unsigned long long;
 using pii = pair<int, int>;
-using pll = pair<ll, ll>;
 #define f(t, i, x, y) for (t (i)=(x); (i)<(y); (i)++)
 #define fe(t, i, x, y) for (t (i)=(x); (i)<=(y); (i)++)
 
@@ -16,29 +15,21 @@ using pll = pair<ll, ll>;
 #define intmin INT64_MIN
 #define int long long
 
+
 class DSU {
     public:
     vector<int> parent;
     vector<int> group_size;
     int connected_components;
     int max_size = 1;
-    vector<int> safe_count;
 
 
-    DSU(int n, vector<bool>& risky) {
+    DSU(int n) {
         parent.resize(n + 1);
         group_size.resize(n + 1, 1);
         connected_components = n; // each vertex is a stand-alone component itself.
 
-
-
-        safe_count.resize(n + 1, 0);
-
-        for (int i=0; i<=n; i++) {
-            parent[i] = i; // each vertex is a parent to itself.
-
-            if (i < n && !risky[i]) safe_count[i] = 1;
-        }
+        for (int i=0; i<=n; i++) parent[i] = i; // each vertex is a parent to itself.
         // iota(parent.begin(), parent.end(), 0); same as parent[i] = i
     }
 
@@ -57,17 +48,11 @@ class DSU {
             parent[parent_j] = parent_i;
             group_size[parent_i] += group_size[parent_j];
             max_size = max(max_size, group_size[parent_i]);
-
-
-            safe_count[parent_i] += safe_count[parent_j];
         }
         else {
             parent[parent_i] = parent_j;
             group_size[parent_j] += group_size[parent_i];
             max_size = max(max_size, group_size[parent_j]);
-
-
-            safe_count[parent_j] += safe_count[parent_i];
         }
 
         // successfully merged two groups == edge created between two forests so,,,
@@ -85,22 +70,9 @@ class DSU {
 };
 
 typedef struct edge {
-    int u, v;
-
-    int original_weight;
-    int risky_points; // 0 1 2
-    int effective_weight;
-
-
+    int u, v, w;
     bool operator<(const edge& other) {
-        bool this_safe = (risky_points == 0);
-        bool other_safe = (other.risky_points == 0);
-
-        if (this_safe != other_safe) {
-            return this_safe > other_safe;
-        }
-
-        return effective_weight < other.effective_weight;
+        return w < other.w;
     }
 } edge;
 
@@ -110,63 +82,49 @@ int32_t main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);    
     
-    int n, m, p, k;
-    cin >> n >> m >> p;
+    int n, m; cin >> n >> m;
 
-    cin >> k;
+    vector<pii> type3;
+    vector<pii> type2;
+    vector<pii> type1;
+    for (int i=0; i<m; i++) {
+        int a, b, c; cin >> a >> b >> c;
 
-    vector<bool> risky(n, false);
-    for (int i=0; i<k; i++) {
-        int x;
-        cin >> x;
-        risky[x] = true;
+        if (c == 3) type3.pb({a, b});
+        else if (c == 2) type2.pb({a, b});
+        else if (c == 1) type1.pb({a, b});
     }
 
-    vector<edge> edges(m);
-    for (auto& e : edges) {
-        cin >> e.u >> e.v >> e.original_weight;
-        e.risky_points = (risky[e.u]) + (risky[e.v]);
+    DSU dsu_men(n), dsu_women(n);
 
-        e.effective_weight = e.original_weight + P * e.risky_points; // 
+    int total_edges = 0;
+
+    for (auto& e : type3) {
+        int a = e.first, b = e.second;
+        bool men = dsu_men.unite(a, b);
+        bool women = dsu_women.unite(a, b);
+
+        if (men || women) total_edges++;
     }
 
-    sort(all(edges));
-
-    int cost = 0;
-    vector<pair<int, int>> final_edges;
-
-
-    DSU dsu(n, risky);
-
-    bool possible = false;
-
-    for (auto& e : edges) {
-        int u = e.u, v = e.v, w = e.effective_weight;
-
-        if (dsu.unite(u, v)) {
-            final_edges.pb({u, v});
-            cost += w;
-
-            if (dsu.safe_count[dsu.find(u)] == n-k) {
-                possible = true;
-                break;
-            }
+    for (auto& e : type1) {
+        int a = e.first, b = e.second;
+        if (dsu_men.unite(a, b)) {
+            total_edges++;
         }
     }
 
-    if (!possible) {
-        cout << -1 << '\n';
-        return 0;
+    for (auto& e : type2) {
+        int a = e.first, b = e.second;
+        if (dsu_women.unite(a, b)) {
+            total_edges++;
+        }
     }
 
-    cout << final_edges.size() << '\n';
-
-    for (auto& e : final_edges) {
-        cout << e.first << " " << e.second;
-        cout << (risky[e.first] || risky[e.second]) ? "RISKY\n" : "\n";
+    if (dsu_men.connected_components == 1 && dsu_women.connected_components == 1) {
+        cout << m - total_edges << '\n';
     }
-    cout << cost;
- 
+    else cout << -1 << '\n';
 
     return 0;
 }
