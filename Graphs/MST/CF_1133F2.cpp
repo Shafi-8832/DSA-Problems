@@ -141,6 +141,7 @@ int32_t main() {
 
         for (auto& v : adj1) {
             if (degree_so_far == D) break; // why put it inside the first line as the for loop, if degree_so_far == D already, it breaks the second for loop and goes to add internal edges, a tricky syntactical move.
+            
             if (!used_neighbor[v]) {
                 final_edges.pb({1, v});
                 degree_so_far++;

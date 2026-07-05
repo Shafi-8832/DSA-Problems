@@ -66,13 +66,14 @@ int32_t main() {
         for (int v=0; v<n; v++) { // since u has been conquered, search outer 
             if (in_mst[v]) continue; // search outer
 
-            int cost = get_distance(cities[u], cities[v]);
+            int cost = get_distance(cities[u], cities[v]); // the edge
+            
             if (cost < min_cost[v]) min_cost[v] = cost, parent[v] = u;
         }
     }
 
     cout << mst << '\n';
-    
+
 
 
     return 0;
