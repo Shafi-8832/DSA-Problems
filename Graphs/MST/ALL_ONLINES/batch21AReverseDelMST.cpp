@@ -137,7 +137,7 @@ int32_t main() {
             adj[u].insert(v);
             adj[v].insert(u);
         }
-        else if (doesnt_hurt)) {
+        else if (doesnt_hurt) {
             mst -= w;
             edges_taken--;
 

@@ -117,7 +117,7 @@ int32_t main() {
             mst += w;
             edges_taken++;
 
-            if (edges_taken == n) {
+            if (edges_taken == n) { // *****
                 possible = true;
                 break;
             }
