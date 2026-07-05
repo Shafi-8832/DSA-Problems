@@ -66,11 +66,14 @@ int32_t main() {
         // taking it would now create a cycle. The safety net catches these delayed cycles and throws them out.
         
         
+        // Conquer the city!
         in_mst[v] = true;
         mst += w;
         nodes_taken++; // upon extraction, the destination node v has been engulfed into the set S
         final_edges.insert({u, v}); // Only add final edges, upon extraction, because, the heap extracts the cheapest CROSS EDGE
 
+
+        
         if (nodes_taken == n || edges_taken == n - 1) {
             possible = true;
             break;
