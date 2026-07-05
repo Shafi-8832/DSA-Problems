@@ -23,6 +23,7 @@ class DSU {
     vector<int> group_size;
     int connected_components;
     int max_size = 1;
+    int largest_leader = 1;
 
 
     DSU(int n) {
@@ -48,12 +49,22 @@ class DSU {
         if (group_size[parent_i] > group_size[parent_j]) {
             parent[parent_j] = parent_i;
             group_size[parent_i] += group_size[parent_j];
-            max_size = max(max_size, group_size[parent_i]);
+
+
+            if (group_size[parent_i] > max_size) {
+                max_size = group_size[parent_i];
+                largest_leader = parent_i;
+            }
         }
         else {
             parent[parent_i] = parent_j;
             group_size[parent_j] += group_size[parent_i];
-            max_size = max(max_size, group_size[parent_j]);
+
+
+            if (group_size[parent_i] > max_size) {
+                max_size = group_size[parent_i];
+                largest_leader = parent_i;
+            }
         }
 
         // successfully merged two groups == edge created between two forests so,,,
