@@ -21,15 +21,16 @@ class DSU {
     vector<int> parent;
     vector<int> group_size;
     int connected_components;
-    int max_size = 1;
+    int max_size = 1; // the size of the largest component, initially 1
     vector<int> safe_count; //
 
 
     DSU(int n, vector<bool>& risky) {
         parent.resize(n + 1);
         group_size.resize(n + 1, 1);
-        connected_components = n; // each vertex is a stand-alone component itself.
 
+
+        connected_components = n; // each vertex is a stand-alone component itself.
 
 
         safe_count.resize(n + 1, 0);
@@ -37,7 +38,7 @@ class DSU {
         for (int i=0; i<=n; i++) {
             parent[i] = i; // each vertex is a parent to itself.
 
-            if (i < n && !risky[i]) safe_count[i] = 1;
+            if (i < n && !risky[i]) safe_count[i] = 1; // why check i < n?? because risky vector 
         }
         // iota(parent.begin(), parent.end(), 0); same as parent[i] = i
     }
@@ -48,6 +49,8 @@ class DSU {
     }
 
     bool unite(int i, int j) {
+
+        // remember, always ask the parent about safe_count, group_size, NEVER ask the non-parent, non-leaders, they hold outdated values (their old pride, when they were)
         int parent_i = find(i);
         int parent_j = find(j);
 
@@ -56,6 +59,8 @@ class DSU {
         if (group_size[parent_i] > group_size[parent_j]) {
             parent[parent_j] = parent_i;
             group_size[parent_i] += group_size[parent_j];
+
+
             max_size = max(max_size, group_size[parent_i]);
 
 
@@ -64,6 +69,8 @@ class DSU {
         else {
             parent[parent_i] = parent_j;
             group_size[parent_j] += group_size[parent_i];
+
+
             max_size = max(max_size, group_size[parent_j]);
 
 
@@ -147,7 +154,7 @@ int32_t main() {
             final_edges.pb({u, v});
             cost += w;
 
-            if (dsu.safe_count[dsu.find(u)] == n-k) {
+            if (dsu.safe_count[dsu.find(u)] == n-k) { // always ask the parent of the group of how many safe nodes in their group
                 possible = true;
                 break;
             }
@@ -163,7 +170,7 @@ int32_t main() {
 
     for (auto& e : final_edges) {
         cout << e.first << " " << e.second;
-        cout << (risky[e.first] || risky[e.second]) ? "RISKY\n" : "\n";
+        cout << ((risky[e.first] || risky[e.second]) ? "RISKY\n" : "\n");
     }
     cout << cost;
  
