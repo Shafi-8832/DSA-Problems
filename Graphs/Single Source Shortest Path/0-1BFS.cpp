@@ -32,7 +32,7 @@ int main() {
             if (d[v] > d[u] + w) {
                 d[v] = d[u] + w;
                 if (w) q.push_back(v);
-                else q.push_back(v);
+                else q.push_front(v);
             }
         }
     }
