@@ -23,7 +23,7 @@ class Graph {
 
 void InitializeSingleSource(int V, int s, vector<int>& d, vector<int>& pi){
     for (int i=0; i<V; i++) {
-        d[v] = -INF;
+        d[v] = INF;
         pi[v] = -1;
     }
     d[s] = 0;

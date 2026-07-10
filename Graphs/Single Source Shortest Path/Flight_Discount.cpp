@@ -11,6 +11,8 @@ int32_t main() {
     int n, e;
     cin >> n >> e;
 
+    // vertices 1 to n
+
     vector<vector< pair<int, int> >> adj_list(n + 1, vector< pair<int, int> >());
     vector<vector<int>> d(n + 1, vector<int>(2, INF)); //
 
@@ -22,10 +24,12 @@ int32_t main() {
 
     priority_queue<tuple<long long, int, int>, 
                 vector<tuple<long long, int, int>>, 
-                greater<tuple<long long, int, int>>> pq;
+                greater<tuple<long long, int, int>>> pq; // {destination, source, coupon_used}
 
-    d[1][1] = INF;
+    d[1][1] = INF; // *** ei value ta koi lagbe?
+
     d[1][0] = 0;
+
     pq.push({0, 1, 0});
 
     while (!pq.empty()) {
