@@ -69,7 +69,7 @@ int32_t main() {
     }
 
     int ans = INF;
-    int coupon_used;
+    int curr_s = 0;
     for (int s = 0; s <= MAX_COUPONS; s++) {
         if (d[D][s] < ans) {
             ans = d[D][s];
@@ -77,18 +77,36 @@ int32_t main() {
         }
     }
 
-    cout << D;
-    cur = D;
-    while (parent[cur][coupon_used].first != -1) {
-        auto [u, s] = parent[cur][coupon_used];
+    if (ans == INF) {
+        cout << "Not Possible\n";
+        return 0;
+    }
 
-        if (s == coupon_used) cout << "<--0---";
-        else cout << "<---1---";
+    vector<pii> path; // {node, (bool)did I use a coupon to come to this node?}
+    int cur = D;
+    while (parent[cur][curr_s].first != -1) {
+        auto [prev_node, prev_node_s] = parent[cur][curr_s];
 
-        coupon_used = s;
-        cur = u;
+        bool coupon_used_for_this_edge = (prev_node_s == curr_s); // cur <----?---- prev_node
+
+        path.pb({prev_node, coupon_used_for_this_edge});
+
+        cur = prev_node;
+        curr_s = prev_node_s;
+    }
+
+    path.pb({cur, false}); // source e agei boshe cchilam, coupon use kori nai (false)
+
+    reverse(all(path));
+
+    for (auto& [u, s] : path) {
+        if (u!=source) {
+            if (s) cout << "--1-->";
+            else cout << "--0--->";
+        }
         cout << u;
     }
+
 
     // vector<int> shortest_path;
     // int dest; cin >> dest;
