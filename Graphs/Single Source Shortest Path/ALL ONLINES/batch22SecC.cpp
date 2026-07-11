@@ -28,6 +28,7 @@ int32_t main() {
     for (int i=1; i<=n; i++) cin >> cap[i];
 
     vector<vector<pii>> adj(n + 1, vector<pii>());
+    vector<int> d(n + 1, intmax);
 
     for (int i=0; i<m; i++) {
         int u, v, w; cin >> u >> v >> w;
@@ -37,10 +38,11 @@ int32_t main() {
     }
     int k; cin >> k;
 
-    set<pii> pq; // {d-value, node}
-
     set<pii> pq2; // for greedy distribution of seats
-
+    
+    
+    set<pii> pq; // {d-value, node}
+    d[1] = 0;
     pq.insert({0, 1});
     while (!pq.empty()) {
         int u = pq.begin()->second;
