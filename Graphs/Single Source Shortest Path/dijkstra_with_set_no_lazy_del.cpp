@@ -46,7 +46,7 @@ int32_t main() {
 
     set<pii> pq; // {d value, destination_node}
 
-    pq.insert({0, source});
+    pq.insert({d[source], source});
     
     while (!pq.empty()) {
         auto [dist, u] = *(pq.begin());
@@ -71,6 +71,11 @@ int32_t main() {
         shortest_path.pb(cur);
     }
     reverse(all(shortest_path));
+
+    for (auto& v : shortest_path) {
+        cout << v;
+        if (v != dest) cout << " -> ";
+    }
     
     return 0;
 }

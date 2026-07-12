@@ -24,12 +24,13 @@ int32_t main() {
 
     int n, e; cin >> n >> e;
 
-    vector<vector<pii>> adjList(n + 1, vector<pii>());
-    vector<int> d(n + 1, INF);
+    vector<vector<pii>> adjList(n, vector<pii>());
+    vector<int> d(n, INF);
 
-    vector<int> vertex(n + 1);
-    for (int i=1; i<=n; i++) {
-        cin >> vertex[i];
+    vector<int> vertex(n);
+    for (int i=0; i<n; i++) {
+        int u, c; cin >> u >> c;
+        vertex[u] = c;
     }
 
     for (int i=0; i<e; i++) {
@@ -39,27 +40,26 @@ int32_t main() {
         cin >> u >> v >> w;
         w = w + vertex[v];
 
-
         adjList[u].pb({w, v});
     }
-
-
-    // Shortest Path reconstruct
-    vector<int> parent(n + 1, -1);
-
     int source, dest; cin >> source >> dest;
     d[source] = vertex[source]; // *****
 
+
+    // Shortest Path reconstruct
+    vector<int> parent(n, -1);
+
+
     set<pii> pq; // {d value, destination_node}
 
-    pq.insert({0, source});
+    pq.insert({vertex[source], source});
     
     while (!pq.empty()) {
         auto [dist, u] = *(pq.begin());
         pq.erase(pq.begin());
 
         for (auto &[w, v] : adjList[u]) {
-            if (d[u] != INF && d[v] > d[u] + w) {
+            if (d[v] > d[u] + w) {
                 pq.erase({d[v], v});
 
                 d[v] = d[u] + w;
@@ -70,7 +70,7 @@ int32_t main() {
         }
     }
 
-    cout << "Shortest path cost : " << d[dest];
+    cout << "Shortest path cost : " << d[dest] << '\n';
 
     vector<int> shortest_path;
     for (int cur = dest; cur != -1; cur = parent[cur]) {
