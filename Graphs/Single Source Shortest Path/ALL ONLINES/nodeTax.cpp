@@ -26,12 +26,21 @@ int32_t main() {
 
     vector<vector<pii>> adjList(n + 1, vector<pii>());
 
+    vector<int> tax(n + 1);
+    for (int i=1; i<=n; i++) cin >> tax[i];
+
+    for (int i=0; i<e; i++) {
+        int u, v;
+        int weight = tax[v];
+        adjList[u].pb({w, v});
+    }
+
     vector<int> d(n + 1, INF);
 
     // Shortest Path reconstruct
     vector<int> parent(n + 1, INF);
 
-    int source; cin >> source;
+    int source = 1;
     d[source] = 0;
 
     set<pii> pq; // {d value, destination_node}

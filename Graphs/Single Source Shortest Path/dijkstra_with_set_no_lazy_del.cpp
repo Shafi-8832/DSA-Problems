@@ -56,13 +56,14 @@ int32_t main() {
                 d[v] = d[u] + w;
                 parent[v] = u;
 
-                pq.push({d[v], v});
+                pq.insert({d[v], v});
             }
         }
     }
 
     vector<int> shortest_path;
     int dest; cin >> dest;
+    
     for (int cur = dest; cur != -1; cur = parent[cur]) {
         shortest_path.pb(cur);
     }

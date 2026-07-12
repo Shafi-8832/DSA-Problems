@@ -58,7 +58,7 @@ int main() {
                 
                 parent[v] = u; // JUST THIS SINGLE LINE IS ENOUGH FOR PATH RECONSTRUCT
 
-                pq.push({d[v], v}); // worst case, pushed all E times = ElogV
+                pq.insert({d[v], v}); // worst case, pushed all E times = ElogV
             }
         }
     }
