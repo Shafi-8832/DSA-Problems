@@ -80,6 +80,7 @@ int32_t main() {
 
     if (d_path[dest] == __DBL_MAX__) {
         cout << "No anomaly but destination is unreachable";
+        return 0;
     }
 
     cout << "Best Exchange rate : ";
