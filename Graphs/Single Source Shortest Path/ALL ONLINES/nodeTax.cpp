@@ -26,13 +26,6 @@ int32_t main() {
 
     vector<vector<pii>> adjList(n + 1, vector<pii>());
 
-    for (int i=0; i<e; i++) {
-        int u, v;
-        int w;
-
-        adjList[u].pb({w, v});
-    }
-
     vector<int> d(n + 1, INF);
 
     // Shortest Path reconstruct
@@ -56,7 +49,7 @@ int32_t main() {
                 d[v] = d[u] + w;
                 parent[v] = u;
 
-                pq.push({d[v], v});
+                pq.insert({d[v], v});
             }
         }
     }
