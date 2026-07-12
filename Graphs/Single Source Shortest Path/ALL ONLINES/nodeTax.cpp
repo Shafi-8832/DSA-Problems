@@ -32,6 +32,7 @@ int32_t main() {
     for (int i=0; i<e; i++) {
         int u, v;
         int weight = tax[v];
+
         adjList[u].pb({w, v});
     }
 
@@ -62,6 +63,8 @@ int32_t main() {
             }
         }
     }
+
+    cout << d[n] << '\n';
 
     vector<int> shortest_path;
     int dest; cin >> dest;
