@@ -38,7 +38,7 @@ int32_t main() {
         int c;
         cin >> a >> b >> c;
 
-        if (cap[a] != -1 && cap[b] != -1) dp[a][b] = c;
+        if (cap[a] != -1 && cap[b] != -1) dp[a][b] = c, dp[b][a] = c;
         // dp[b][a] = c;
     }
 
@@ -58,11 +58,28 @@ int32_t main() {
         // row u
         multiset<pii> d;
         for (int i=1; i<=n; i++) {
-            if (d[u][i] == intmax) continue;
-            d.insert({d[u][i], cap[i]});
+            if (dp[u][i] == intmax) continue;
+            d.insert({dp[u][i], cap[i]});
         }
-        
+    
+        int student_placed = 0;
+        for (auto& t : d) {
 
+            // suppose the closest lab is lab 3, cost = 4, capacity = 3
+            // then the cost is going to get printed 3 times
+            // 4 4 4 
+            int cap = t.second;
+            int cost = t.first;
+
+            while (cap > 0 && student_placed < k) {
+                cout << cost << " ";
+                cap--;
+                student_placed++;
+            }
+            if (student_placed == k) break;
+            
+        }
+        while (student_placed < k) cout << -1 << " ", s++;
     }
 
 
