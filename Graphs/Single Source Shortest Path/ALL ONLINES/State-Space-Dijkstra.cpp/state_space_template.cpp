@@ -6,6 +6,8 @@ using ll = long long;
 using ull = unsigned long long;
 using pii = pair<int, int>;
 using pll = pair<ll, ll>;
+using tiii = tuple<int, int, int>; 
+
 #define f(t, i, x, y) for (t (i)=(x); (i)<(y); (i)++)
 #define fe(t, i, x, y) for (t (i)=(x); (i)<=(y); (i)++)
 
@@ -17,63 +19,69 @@ using pll = pair<ll, ll>;
 #define INF INT64_MAX
 #define int long long
 
-
 int32_t main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);
 
-    int n, e; cin >> n >> e;
+    int n, e; 
+    if (!(cin >> n >> e)) return 0;
 
     int MAX_COUPONS = 1;
 
     vector<vector<pii>> adjList(n + 1, vector<pii>());
+    for (int i = 0; i < e; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adjList[u].pb({w, v});
+        adjList[v].pb({w, u}); // Assuming bidirectional, remove if directed
+    }
 
-    // THIS LINE
+    // 2D Distance Array: d[node][coupons_used]
     vector<vector<int>> d(n + 1, vector<int>(MAX_COUPONS + 1, INF));
-    // Shortest Path reconstruct
-
+    
+    // Parent Array: parent[node][coupons_used] = {prev_node, prev_coupons_used}
     vector<vector<pii>> parent(n + 1, vector<pii>(MAX_COUPONS + 1, {-1, -1}));
 
-    int source; cin >> source;
+    int source, D; 
+    cin >> source >> D;
+    
     d[source][0] = 0;
-    // for (int i=1; i<=MAX_COUPONS; i++) d[source][i] = INF; // Constructor alerady did it // just to clear the concept
 
-    set<tiii> pq; // {d value, destination_node, coupon_status(used or not)}
-
+    set<tiii> pq; // {d value, destination_node, coupon_status}
     pq.insert({0, source, 0});
     
     while (!pq.empty()) {
         auto [dist, u, s] = *(pq.begin());
         pq.erase(pq.begin());
 
+        // We do NOT break early, to allow all parallel states to reach D!
+
         for (auto &[w, v] : adjList[u]) {
-            // HORIZONTAL WALK : up to u, joto gula coupon use korsi, u theke v te ashte ar use kori nai coupon
+            // HORIZONTAL WALK: No new coupons used
             if (d[v][s] > d[u][s] + w) {
-                pq.erase({d[v][s], v, s}); // joto gula coupon used, toto gulai
+                pq.erase({d[v][s], v, s}); 
                 d[v][s] = d[u][s] + w;
-                pq.insert({d[v][s], v, s}); // joto gula coupon used, toto gulai
-
+                pq.insert({d[v][s], v, s}); 
                 parent[v][s] = {u, s};
-
             }
-            // Angled Edge / Lift
-            if (s < MAX_COUPONS && d[v][s+1] > d[u][s] + w/2){
+            
+            // DIAGONAL LIFT: Use exactly 1 coupon
+            if (s < MAX_COUPONS && d[v][s+1] > d[u][s] + (w / 2)){
                 pq.erase({d[v][s+1], v, s+1});
-                d[v][s+1] = d[u][s] + w/2;
-                pq.erase({d[v][s+1], v, s+1});
-
+                d[v][s+1] = d[u][s] + (w / 2);
+                pq.insert({d[v][s+1], v, s+1}); 
                 parent[v][s+1] = {u, s};
-
             }
         }
     }
 
     int ans = INF;
     int curr_s = 0;
+    
     for (int s = 0; s <= MAX_COUPONS; s++) {
         if (d[D][s] < ans) {
             ans = d[D][s];
-            coupon_used = s;
+            curr_s = s; 
         }
     }
 
@@ -82,40 +90,33 @@ int32_t main() {
         return 0;
     }
 
-    vector<pii> path; // {node, (bool)did I use a coupon to come to this node?}
+    // Path Reconstruction
+    vector<pii> path; // {node, coupons_spent_to_arrive_here}
     int cur = D;
+    
     while (parent[cur][curr_s].first != -1) {
         auto [prev_node, prev_node_s] = parent[cur][curr_s];
-
-        bool coupon_used_for_this_edge = (prev_node_s == curr_s); // cur <----?---- prev_node
-
-        path.pb({prev_node, coupon_used_for_this_edge});
-
+        
+        // Calculate exactly how many coupons were spent on this specific road
+        int coupons_spent = curr_s - prev_node_s; 
+        
+        path.pb({cur, coupons_spent});
+        
         cur = prev_node;
         curr_s = prev_node_s;
     }
 
-    path.pb({cur, false}); // source e agei boshe cchilam, coupon use kori nai (false)
-
+    path.pb({source, 0}); // Push the starting node (0 coupons spent to arrive at source)
     reverse(all(path));
 
-    for (auto& [u, s] : path) {
-        if (u!=source) {
-            if (s) cout << "--1-->";
-            else cout << "--0--->";
+    // Print forwards
+    for (size_t i = 0; i < path.size(); i++) {
+        cout << path[i].first;
+        if (i < path.size() - 1) {
+            cout << " --" << path[i+1].second << "--> ";
         }
-        cout << u;
     }
+    cout << "\nTotal Cost: " << ans << "\n";
 
-
-    // vector<int> shortest_path;
-    // int dest; cin >> dest;
-    // for (int cur = dest; cur != -1; cur = parent[cur]) {
-    //     shortest_path.pb(cur);
-    // }
-    // reverse(all(shortest_path));
-
-
-    
     return 0;
 }

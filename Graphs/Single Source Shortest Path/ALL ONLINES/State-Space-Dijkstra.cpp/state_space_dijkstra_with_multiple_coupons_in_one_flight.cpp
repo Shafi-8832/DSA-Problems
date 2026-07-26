@@ -6,6 +6,8 @@ using ll = long long;
 using ull = unsigned long long;
 using pii = pair<int, int>;
 using pll = pair<ll, ll>;
+using tiii = tuple<int, int, int>; 
+
 #define f(t, i, x, y) for (t (i)=(x); (i)<(y); (i)++)
 #define fe(t, i, x, y) for (t (i)=(x); (i)<=(y); (i)++)
 
@@ -17,29 +19,31 @@ using pll = pair<ll, ll>;
 #define INF INT64_MAX
 #define int long long
 
-
 int32_t main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);
 
-    int n, e; cin >> n >> e;
+    int n, e; 
+    if (!(cin >> n >> e)) return 0;
 
-    int MAX_COUPONS = 1;
+    int MAX_COUPONS = 3; // Example: Allow up to 3 stacked coupons
 
     vector<vector<pii>> adjList(n + 1, vector<pii>());
+    for (int i = 0; i < e; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adjList[u].pb({w, v});
+    }
 
-    // THIS LINE
     vector<vector<int>> d(n + 1, vector<int>(MAX_COUPONS + 1, INF));
-    // Shortest Path reconstruct
-
     vector<vector<pii>> parent(n + 1, vector<pii>(MAX_COUPONS + 1, {-1, -1}));
 
-    int source; cin >> source;
+    int source, D; 
+    cin >> source >> D;
+    
     d[source][0] = 0;
-    // for (int i=1; i<=MAX_COUPONS; i++) d[source][i] = INF; // Constructor alerady did it // just to clear the concept
 
-    set<tiii> pq; // {d value, destination_node, coupon_status(used or not)}
-
+    set<tiii> pq; 
     pq.insert({0, source, 0});
     
     while (!pq.empty()) {
@@ -48,32 +52,30 @@ int32_t main() {
 
         for (auto &[w, v] : adjList[u]) {
             int coupon_left = MAX_COUPONS - s;
-            for (int c=0; c<=coupon_left; c++) {
+            
+            // Loop through all allowable coupon spends on this single edge!
+            for (int c = 0; c <= coupon_left; c++) {
                 int next_s = s + c;
-
-                int eff_weight = w >> c;
+                int eff_weight = w >> c; // Stacked discount: w / (2^c)
 
                 if (d[v][next_s] > d[u][s] + eff_weight) {
                     pq.erase({d[v][next_s], v, next_s});
                     d[v][next_s] = d[u][s] + eff_weight;
-
-
                     pq.insert({d[v][next_s], v, next_s});
 
                     parent[v][next_s] = {u, s};
                 }
             }
-
-
         }
     }
 
     int ans = INF;
     int curr_s = 0;
+    
     for (int s = 0; s <= MAX_COUPONS; s++) {
         if (d[D][s] < ans) {
             ans = d[D][s];
-            coupon_used = s;
+            curr_s = s;
         }
     }
 
@@ -82,40 +84,32 @@ int32_t main() {
         return 0;
     }
 
-    vector<pii> path; // {node, (bool)did I use a coupon to come to this node?}
+    vector<pii> path; 
     int cur = D;
+    
     while (parent[cur][curr_s].first != -1) {
         auto [prev_node, prev_node_s] = parent[cur][curr_s];
+        
+        // This easily catches exactly how many coupons were stacked here
+        int coupons_spent = curr_s - prev_node_s; 
 
-        bool coupon_used_for_this_edge = (prev_node_s == curr_s); // cur <----?---- prev_node
-
-        path.pb({prev_node, coupon_used_for_this_edge});
+        path.pb({cur, coupons_spent});
 
         cur = prev_node;
         curr_s = prev_node_s;
     }
 
-    path.pb({cur, false}); // source e agei boshe cchilam, coupon use kori nai (false)
-
+    path.pb({source, 0}); 
     reverse(all(path));
 
-    for (auto& [u, s] : path) {
-        if (u!=source) {
-            if (s) cout << "--1-->";
-            else cout << "--0--->";
+    // Print forwards seamlessly
+    for (size_t i = 0; i < path.size(); i++) {
+        cout << path[i].first;
+        if (i < path.size() - 1) {
+            cout << " --" << path[i+1].second << "--> ";
         }
-        cout << u;
     }
+    cout << "\nTotal Cost: " << ans << "\n";
 
-
-    // vector<int> shortest_path;
-    // int dest; cin >> dest;
-    // for (int cur = dest; cur != -1; cur = parent[cur]) {
-    //     shortest_path.pb(cur);
-    // }
-    // reverse(all(shortest_path));
-
-
-    
     return 0;
 }
