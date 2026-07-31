@@ -81,9 +81,9 @@ int32_t main() {
     int max_flow = 0;
 
     while (( bottleneck = bfs(source, dest, parent, curr_cap, adj_list) ) != -1) {
-        max_flow += bottleneck;
+        max_flow += bottleneck; // corollary 26.3
 
-        // trace the path
+        // trace the augmented path
         int cur = dest;
         while (parent[cur] != -1) {
             // edge : (parent[cur], cur)
@@ -99,9 +99,9 @@ int32_t main() {
 
             // augmented path STRICTLY decreases the flow of forward edge, and STRICTLY increases the flow of reverse edge
             curr_cap[from][to] -= bottleneck;
-            curr_cap[cur][prev] += bottleneck;
+            curr_cap[to][from] += bottleneck;
 
-            cur = prev;
+            cur = parent[cur];
         }
 
         fill(all(parent), -1);
