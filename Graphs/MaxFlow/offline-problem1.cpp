@@ -38,7 +38,7 @@ int bfs(int source, int dest, vector<int>& parent, vector<vector<int>>& curr_cap
             if (!visited[v] && curr_cap[u][v] > 0) {
                 visited[v] = true;
 
-                min_cap[v] = min(min_cap[u], curr_cap[u][v]);
+                min_cap[v] = min(min_cap[u], curr_cap[u][v]); // 
                 parent[v] = u;
                 q.push(v);
             }
@@ -56,7 +56,7 @@ int32_t main() {
     int n, e; cin >> n >> e;
 
     vector<vector<int>> curr_cap(n, vector<int>(n, 0));
-    vector<vector<int>> flow(n, vector<int>(n, 0)); // f(u, v) = 0 if (u, v) doesn't exist
+    // vector<vector<int>> flow(n, vector<int>(n, 0)); // f(u, v) = 0 if (u, v) doesn't exist
     vector<vector<int>> capacity(n, vector<int>(n, 0));
     vector<vector<int>> adj_list(n, vector<int>());
     vector<int> parent(n, -1);
@@ -68,7 +68,7 @@ int32_t main() {
 
         capacity[a][b] = c;
 
-        curr_cap[a][b] = c;
+        curr_cap[a][b] += c;
 
 
         adj_list[a].pb(b);
@@ -89,14 +89,18 @@ int32_t main() {
             // edge : (parent[cur], cur)
             int from = parent[cur];
             int to = cur;
-
+            
+            
+            
             // if edge in E
-            if (capacity[from][to] > 0) { // equivalent to checking : if (u, v) in E IN CORMEN
-                flow[from][to] += bottleneck;
-            }
-            else {
-                flow[to][from] -= bottleneck;
-            }
+            // if (capacity[from][to] > 0) { // equivalent to checking : if (u, v) in E IN CORMEN
+            //     flow[from][to] += bottleneck;
+            // }
+            // else {
+            //     flow[to][from] -= bottleneck;
+            // }
+
+
 
             // augmented path STRICTLY decreases the flow of forward edge, and STRICTLY increases the flow of reverse edge
             curr_cap[from][to] -= bottleneck;
@@ -111,13 +115,13 @@ int32_t main() {
     cout << max_flow << "\n";
 
     // final flow of the edges
-    for (int u=0; u<n; u++) {
-        for (int v : adj_list[u]) {
-            if (capacity[u][v] == 0) continue;
-            cout << "(" << u << ", " << v << ") : ";
-            cout << capacity[u][v] - curr_cap[u][v] << "/" << capacity[u][v] << '\n';
-        }
-    }
+    // for (int u=0; u<n; u++) {
+    //     for (int v : adj_list[u]) {
+    //         if (capacity[u][v] == 0) continue;
+    //         cout << "(" << u << ", " << v << ") : ";
+    //         cout << capacity[u][v] - curr_cap[u][v] << "/" << capacity[u][v] << '\n';
+    //     }
+    // }
 
 
     return 0;
