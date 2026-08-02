@@ -225,6 +225,16 @@ int32_t main() {
             }
         }
     }
+
+    int current_flow = ek.get_max_flow(source, sink);
+
+    ek.add_edge(u, v, 10); 
+
+    // pick up exactly where left off, using the residual graph
+    int extra_flow = ek.get_max_flow(source, sink);
+
+    // 4. The new total is just the old flow + whatever extra squeezed through.
+    int new_total_flow = current_flow + extra_flow;
     
     return 0;
 }
