@@ -209,6 +209,22 @@ int32_t main() {
             }
         }
     }
+
+
+    int max_flow = ek.get_max_flow(source, sink);
+    vector<bool> in_set_S = ek.get_reachable(source);
+    vector<int> setS;
+    for (int i=0; i<in_set_S.size(); i++) {
+        if (in_set_S[i]) setS.pb(i);
+    }
+
+    for (int u : setS) {
+        for (auto& edge : adj[u]) {
+            if (edge.is_real && !in_set_S[edge.to]) {
+                cout << "Min-Cut edge: " << u << " -> " << edge.to << '\n';
+            }
+        }
+    }
     
     return 0;
 }
