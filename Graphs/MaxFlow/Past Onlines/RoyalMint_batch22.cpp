@@ -25,9 +25,8 @@ using pll = pair<ll, ll>;
 struct EdmondsKarp {
     struct edge {
         int to, cap, rev_idx;
-
+        //
         bool is_real; // mane basically eta forward edge kina
-
     };
     
     int n;
@@ -80,28 +79,6 @@ struct EdmondsKarp {
             }
         }
         return false;
-    }
-
-    vector<bool> get_reachable(int start_node) {
-        vector<bool> visited(n, false);
-        queue<int> q;
-
-        visited[start_node] = true;
-        q.push(start_node);
-
-        while (!q.empty()) {
-            int u = q.front();
-            q.pop();
-
-            for (auto& edge : adj[u]) {
-                if (!visited[edge.to] && edge.cap > 0) {
-                    visited[edge.to] = true;
-                    q.push(edge.to);
-                }
-            }
-        }
-
-        return visited;
     }
 
     // 3.5 bottleneck finder
@@ -159,56 +136,125 @@ struct EdmondsKarp {
     }
 };
 
+
+void solve(int cs) {
+    int M, N; cin >> M >> N;
+
+    EdmondsKarp ek;
+    ek.init(N + 1);
+
+    int source = 1, sink = N;
+
+    for (int i=0; i<m; i++) {
+        int u, v; cin >> u >> v;
+        ek.add_edge(u, v, 1);
+    }
+
+    int max_routes = ek.get_max_flow(source, sink);
+
+    cout << "Case " << cs << ": " << max_routes << '\n';
+
+    if (max_routes == 0) {
+        cout << "No escape route possible! The Professor needs a new plan.\n";
+        return;
+    }
+
+
+    for (int i=0; i<max_routes; i++) {
+        int cur = source;
+        vector<int> path;
+
+        path.pb(cur);
+
+        while (cur != sink) {
+            for (auto& edge : ek.adj[cur]) {
+                if (edge.is_real && edge.cap == 0) { // real forward taken edge
+                    int next_node = edge.to;
+
+                    path.pb(next_node);
+
+                    edge.cap = -1; // so that it doesn't get picked up again
+
+                    cur = next_node;
+                    break;
+                }
+            }
+        }
+
+        for (int j=0; j<path.size(); j++) {
+            cout << path[j];
+            if (j != path.size()) cout << " -> "
+        }
+
+
+        cout << '\n';
+    }
+
+}
+
 int32_t main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr); cout.tie(nullptr);
+
+
+    int t; cin >> t;
 
     int M, N; cin >> M >> N;
     // 0 to M-1 --> MEN/WOMEN/Employee
     // M to M+N-1 --> WOMEN/MEN/Job
 
-    int source = M + N;
-    int sink = M + N + 1;
 
-    int total_nodes = M + N + 2;
+    vector<>
+
+    for (int i=0; i<m; i++) {
+        int a, b cin >> a >> b;
+        add_edge(a, b, 1);
+    }
+
+    int source = 1;
+    int sink = N;
+
+    int total_nodes = N;
 
     EdmondsKarp ek;
-    ek.init(total_nodes);
+    ek.init(total_nodes + 1);
 
-    // super source to all of left bipartite set
-    for (int i=0; i<M; i++) {
-        ek.add_edge(source, i, 1); // or whatever the CAPACITY
-    }
+    // // super source to all of left bipartite set
+    // for (int i=0; i<M; i++) {
+    //     ek.add_edge(source, i, 1); // or whatever the CAPACITY
+    // }
 
-    // all of right bipartite set to super sink
-    for (int j=M; j<=M+N-1; j++) {
-        ek.add_edge(j, sink, 1); // whatever the CAPACITY
-    }
+    // // all of right bipartite set to super sink
+    // for (int j=M; j<=M+N-1; j++) {
+    //     ek.add_edge(j, sink, 1); // whatever the CAPACITY
+    // }
 
-    // Middle Edges generation
-    for (int i=0; i<=M-1; i++) {
-        for (int j=M; j<=M+N-1; j++) {
-            if (is_valid_match()) {
-                ek.add_edge(i, j, 1); // whatever the CAPACITY
-            }
-        }
-    }
+    // // Middle Edges generation
+    // for (int i=0; i<=M-1; i++) {
+    //     for (int j=M; j<=M+N-1; j++) {
+    //         if (is_valid_match()) {
+    //             ek.add_edge(i, j, 1); // whatever the CAPACITY
+    //         }
+    //     }
+    // }
 
     int max_matches = ek.get_max_flow(source, sink);
     cout << "Maximum Matches : " << max_matches << '\n';
 
 
-    for (int u=0; u<M; u++) {
-        for (int i=0; i<ek.adj[u].size(); i++) {
-            int v = ek.adj[u][i].to;
-            int remaining_cap = ek.adj[u][i].cap;
+    // for (int u=0; u<M; u++) {
+    //     for (int i=0; i<ek.adj[u].size(); i++) {
+    //         int v = ek.adj[u][i].to;
+    //         int remaining_cap = ek.adj[u][i].cap;
 
-            if (v != source && remaining_cap == 0) {
-                int woman_index = v - M;
-                cout << u << "is married to " << woman_index << '\n';
-            }
-        }
-    }
+    //         if (v != source && remaining_cap == 0) {
+    //             int woman_index = v - M;
+    //             cout << u << "is married to " << woman_index << '\n';
+    //         }
+    //     }
+    // }
+
+    // 
     
     return 0;
 }
